@@ -1,0 +1,108 @@
+.merch-container {
+  background: rgba(255,255,255,0.6);
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(0, 51, 160, 0.18), 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 2.5rem 2rem 2rem 2rem;
+  margin: 130px auto 2rem auto;
+  width: 100%;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  border: 1.5px solid #e3e9f7;
+  transition: box-shadow 0.2s;
+}
+
+.merch-title {
+  color: #0033a0;
+  font-size: 2.1rem;
+  font-weight: bold;
+  margin-bottom: 1.2rem;
+  text-align: center;
+  letter-spacing: 1px;
+  font-family: 'Segoe UI', 'Arial', 'Helvetica Neue', Arial, sans-serif; /* Ensure font consistency */
+}
+
+.merch-desc {
+  color: #0033a0;
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.merch-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+  width: 100%;
+}
+
+.merch-item {
+  background: rgba(255,255,255,0.6);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,51,160,0.08);
+  padding: 1.2rem 1.2rem 1.5rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 180px;
+  min-width: 150px;
+  max-width: 220px;
+  border: 1.5px solid #e3e9f7;
+}
+
+.merch-img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  margin-bottom: 1rem;
+}
+
+.merch-item-title {
+  font-weight: 600;
+  color: #0033a0;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.merch-item-price {
+  color: #00bfff;
+  font-weight: bold;
+  margin-bottom: 0.7rem;
+  font-size: 1.1rem;
+}
+
+.merch-btn {
+  background: linear-gradient(90deg, #0033a0 60%, #00bfff 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(0,51,160,0.08);
+}
+
+.merch-btn:hover {
+  background: linear-gradient(90deg, #0057d8 60%, #00bfff 100%);
+  box-shadow: 0 4px 16px rgba(0,51,160,0.14);
+}
+
+@media (max-width: 800px) {
+  .merch-container {
+    max-width: 98vw;
+    padding: 1.2rem 0.5rem 1.5rem 0.5rem;
+    margin-top: 100px;
+    border-radius: 14px;
+  }
+  .merch-items {
+    flex-direction: column;
+    gap: 1.2rem;
+    align-items: center;
+  }
+}

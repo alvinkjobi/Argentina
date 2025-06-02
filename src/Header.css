@@ -1,0 +1,64 @@
+.afa-header {
+  background: rgba(0, 51, 160, 0.7);
+  color: #fff;
+  padding: 1rem 0;
+  margin-bottom: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  z-index: 100;
+  font-family: 'Segoe UI', 'Arial', 'Helvetica Neue', Arial, sans-serif; /* Ensure font consistency */
+}
+
+.afa-header-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  height: 80px;
+  padding: 0 32px;
+  box-sizing: border-box;
+  position: static;
+}
+
+.afa-logo {
+  height: 150px;
+  margin-right: 2rem;
+  padding: 0;
+}
+
+.afa-nav {
+  display: flex;
+  gap: 2rem;
+  margin-left: auto;
+}
+
+.afa-nav-link {
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.2s;
+  font-family: inherit; /* Inherit font from header */
+}
+
+.afa-nav-link:hover {
+  color: #ffd700;
+}
+
+.SignIn{
+  color: hsl(240, 12%, 91%);
+}
+
+.Title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 2px 2px 8px #0033a0, 0 2px 4px #0003;
+  margin-bottom: 0.5rem;
+  margin-top: 1rem;
+  letter-spacing: 1px;
+  font-family: inherit; /* Inherit font from header */
+}
