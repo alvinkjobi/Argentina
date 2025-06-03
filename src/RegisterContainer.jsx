@@ -25,11 +25,17 @@ function RegisterContainer() {
           name: name.trim(),
           email: email.trim().toLowerCase(),
           password: password.trim(),
+          admin: "No", // Default to "No" for new users
         }),
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || 'Registration failed');
+        // Show specific error if user already exists
+        if (res.status === 409 && data.error) {
+          setError(data.error);
+        } else {
+          setError(data.error || 'Registration failed');
+        }
         return;
       }
       setSuccess('Registration successful! Redirecting to sign in...');

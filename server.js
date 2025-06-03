@@ -18,9 +18,10 @@ const Gallery = mongoose.model('Gallery', gallerySchema, 'gallery');
 
 // User schema/model (use 'users' collection)
 const userSchema = new mongoose.Schema({
-  email: String,
+  email: { type: String, unique: true }, // enforce unique email
   password: String,
-  name: String, // <-- Add this line
+  name: String,
+  admin: { type: String, default: "No" }, // <-- Add admin field
   // ... add other fields if needed
 });
 const User = mongoose.model('User', userSchema, 'users');
@@ -32,6 +33,26 @@ app.get('/api/gallery', async (req, res) => {
     res.json(images);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch gallery images' });
+  }
+});
+
+// API endpoint to get match tickets
+app.get('/api/matchtickets', async (req, res) => {
+  try {
+    const tickets = await mongoose.connection.collection('matchtickets').find({}).toArray();
+    res.json(tickets);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch match tickets' });
+  }
+});
+
+// API endpoint to get merchandise
+app.get('/api/merchandise', async (req, res) => {
+  try {
+    const merchandise = await mongoose.connection.collection('merchandise').find({}).toArray();
+    res.json(merchandise);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch merchandise' });
   }
 });
 
@@ -75,7 +96,7 @@ app.post('/api/signin', async (req, res) => {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
-    res.json({ message: 'Sign in successful', user: { email: user.email } });
+    res.json({ message: 'Sign in successful', user: { email: user.email, admin: user.admin } });
   } catch (err) {
     console.error('Sign-in error:', err);
     res.status(500).json({ error: 'Server error' });
@@ -97,15 +118,19 @@ app.post('/api/register', async (req, res) => {
     // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(409).json({ error: 'Email already registered' });
+      return res.status(409).json({ error: 'User already exists with this email' });
     }
 
-    // Create and save new user
-    const newUser = new User({ email, password, name });
+    // Create and save new user with admin: "No"
+    const newUser = new User({ email, password, name, admin: "No" });
     await newUser.save();
 
-    res.json({ message: 'Registration successful', user: { email, name } });
+    res.json({ message: 'Registration successful', user: { email, name, admin: "No" } });
   } catch (err) {
+    // Handle duplicate key error (in case of race condition)
+    if (err.code === 11000) {
+      return res.status(409).json({ error: 'User already exists with this email' });
+    }
     console.error('Registration error:', err);
     res.status(500).json({ error: 'Server error' });
   }

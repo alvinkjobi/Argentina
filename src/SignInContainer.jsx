@@ -23,9 +23,14 @@ function SignInContainer() {
         setError(data.error || 'Sign in failed');
         return; // Only proceed if credentials are correct
       }
-      // Only redirect if sign-in is successful
+      const data = await res.json();
       window.dispatchEvent(new CustomEvent('afa-signin'));
-      window.history.pushState({}, '', '/merchandise');
+      // Redirect based on admin status
+      if (data.user && data.user.admin === "Yes") {
+        window.history.pushState({}, '', '/admin');
+      } else {
+        window.history.pushState({}, '', '/merchandise');
+      }
       window.dispatchEvent(new PopStateEvent('popstate'));
     } catch (err) {
       setError('Network error');

@@ -5,6 +5,7 @@ import App from './App.jsx'
 import SignIn from './SignIn.jsx'
 import Register from './Register.jsx'
 import Merchandise from './Merchandise.jsx'
+import AdminPage from './AdminPage.jsx'
 
 
 // Add a global auth state
@@ -95,6 +96,7 @@ function Router() {
     }
     return <Merchandise />;
   }
+  if (path === '/admin') return <AdminPage />;
   return <App />;
 }
 
