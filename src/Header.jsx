@@ -11,6 +11,15 @@ function Header({ isSignInPage = false }) {
     setTimeout(() => setShowPopup(false), 1800);
   };
 
+  // Smooth scroll to section by id
+  const handleSectionScroll = (e, sectionId) => {
+    e.preventDefault();
+    const el = document.getElementById(sectionId);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   return (
     <header className="afa-header">
       <div className="afa-header-container" style={{ position: "relative" }}>
@@ -23,9 +32,27 @@ function Header({ isSignInPage = false }) {
         <nav className="afa-nav">
           {!isSignInPage && (
             <>
-              <a href="#news-section" className="afa-nav-link">News</a>
-              <a href="#Trophy-section" className="afa-nav-link">Trophy</a>
-              <a href="#players-section" className="afa-nav-link">Gallery</a>
+              <a
+                href="#news-section"
+                className="afa-nav-link"
+                onClick={e => handleSectionScroll(e, "news-section")}
+              >
+                News
+              </a>
+              <a
+                href="#Trophy-section"
+                className="afa-nav-link"
+                onClick={e => handleSectionScroll(e, "Trophy-section")}
+              >
+                Trophy
+              </a>
+              <a
+                href="#players-section"
+                className="afa-nav-link"
+                onClick={e => handleSectionScroll(e, "players-section")}
+              >
+                Gallery
+              </a>
               
               <a
                 href="/signin"
@@ -60,8 +87,14 @@ function Header({ isSignInPage = false }) {
           {isSignInPage && (
             <>
               <a
-                href="/App"
+                href="/"
                 className="afa-nav-link"
+                data-signout="1"
+                onClick={e => {
+                  e.preventDefault();
+                  window.dispatchEvent(new CustomEvent('afa-signout'));
+                  // Do not pushState here; Router will handle redirect
+                }}
               >
                 Sign-Out
               </a>

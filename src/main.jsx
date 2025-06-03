@@ -7,10 +7,39 @@ import Register from './Register.jsx'
 import Merchandise from './Merchandise.jsx'
 
 
-// Simple SPA router using state and popstate event
+// Add a global auth state
 function Router() {
   const [path, setPath] = useState(window.location.pathname.toLowerCase());
   const [search, setSearch] = useState(window.location.search);
+  const [isSignedIn, setIsSignedIn] = useState(false);
+
+  // Track redirect path after sign-out
+  const [redirectToHome, setRedirectToHome] = useState(false);
+
+  useEffect(() => {
+    const onSignIn = () => setIsSignedIn(true);
+    const onSignOut = () => {
+      setIsSignedIn(false);
+      setRedirectToHome(true);
+    };
+
+    window.addEventListener('afa-signin', onSignIn);
+    window.addEventListener('afa-signout', onSignOut);
+
+    return () => {
+      window.removeEventListener('afa-signin', onSignIn);
+      window.removeEventListener('afa-signout', onSignOut);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (redirectToHome) {
+      window.history.pushState({}, '', '/');
+      setRedirectToHome(false);
+      setPath('/');
+      setSearch('');
+    }
+  }, [redirectToHome]);
 
   useEffect(() => {
     const onPopState = () => {
@@ -38,6 +67,10 @@ function Router() {
           setPath(pathname);
           setSearch(window.location.search);
         }
+        // Handle sign-out link
+        if (anchor.getAttribute('data-signout') === '1') {
+          window.dispatchEvent(new CustomEvent('afa-signout'));
+        }
       }
     };
 
@@ -50,9 +83,18 @@ function Router() {
     };
   }, []);
 
-  if (path === '/signin') return <SignIn />;
+  // Only allow access to /merchandise if signed in
+  if (path === '/signin') return <SignIn onSignIn={() => setIsSignedIn(true)} />;
   if (path === '/register') return <Register />;
-  if (path === '/merchandise') return <Merchandise />;
+  if (path === '/merchandise') {
+    if (!isSignedIn) {
+      // Redirect to sign-in if not authenticated
+      window.history.replaceState({}, '', '/signin');
+      setPath('/signin');
+      return <SignIn onSignIn={() => setIsSignedIn(true)} />;
+    }
+    return <Merchandise />;
+  }
   return <App />;
 }
 

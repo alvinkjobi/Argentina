@@ -20,6 +20,7 @@ const Gallery = mongoose.model('Gallery', gallerySchema, 'gallery');
 const userSchema = new mongoose.Schema({
   email: String,
   password: String,
+  name: String, // <-- Add this line
   // ... add other fields if needed
 });
 const User = mongoose.model('User', userSchema, 'users');
@@ -77,6 +78,35 @@ app.post('/api/signin', async (req, res) => {
     res.json({ message: 'Sign in successful', user: { email: user.email } });
   } catch (err) {
     console.error('Sign-in error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Register endpoint
+app.post('/api/register', async (req, res) => {
+  try {
+    let { email, password, name } = req.body;
+    email = email ? email.trim().toLowerCase() : '';
+    password = password ? password.trim() : '';
+    name = name ? name.trim() : '';
+
+    if (!email || !password || !name) {
+      return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(409).json({ error: 'Email already registered' });
+    }
+
+    // Create and save new user
+    const newUser = new User({ email, password, name });
+    await newUser.save();
+
+    res.json({ message: 'Registration successful', user: { email, name } });
+  } catch (err) {
+    console.error('Registration error:', err);
     res.status(500).json({ error: 'Server error' });
   }
 });

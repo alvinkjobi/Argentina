@@ -21,9 +21,10 @@ function SignInContainer() {
       if (!res.ok) {
         const data = await res.json();
         setError(data.error || 'Sign in failed');
-        return;
+        return; // Only proceed if credentials are correct
       }
-      // On success, redirect
+      // Only redirect if sign-in is successful
+      window.dispatchEvent(new CustomEvent('afa-signin'));
       window.history.pushState({}, '', '/merchandise');
       window.dispatchEvent(new PopStateEvent('popstate'));
     } catch (err) {
