@@ -44,8 +44,18 @@ function Router() {
 
   useEffect(() => {
     const onPopState = () => {
-      setPath(window.location.pathname.toLowerCase());
+      const newPath = window.location.pathname.toLowerCase();
+      setPath(newPath);
       setSearch(window.location.search);
+
+      // Prevent access to protected pages after sign-out
+      if (
+        (newPath === '/merchandise' || newPath === '/admin') &&
+        !isSignedIn
+      ) {
+        window.history.replaceState({}, '', '/signin');
+        setPath('/signin');
+      }
     };
 
     // Intercept anchor clicks for SPA navigation
@@ -82,21 +92,27 @@ function Router() {
       window.removeEventListener('popstate', onPopState);
       document.body.removeEventListener('click', onClick);
     };
-  }, []);
+  }, [isSignedIn]);
 
   // Only allow access to /merchandise if signed in
   if (path === '/signin') return <SignIn onSignIn={() => setIsSignedIn(true)} />;
   if (path === '/register') return <Register />;
   if (path === '/merchandise') {
     if (!isSignedIn) {
-      // Redirect to sign-in if not authenticated
       window.history.replaceState({}, '', '/signin');
       setPath('/signin');
       return <SignIn onSignIn={() => setIsSignedIn(true)} />;
     }
     return <Merchandise />;
   }
-  if (path === '/admin') return <AdminPage />;
+  if (path === '/admin') {
+    if (!isSignedIn) {
+      window.history.replaceState({}, '', '/signin');
+      setPath('/signin');
+      return <SignIn onSignIn={() => setIsSignedIn(true)} />;
+    }
+    return <AdminPage />;
+  }
   return <App />;
 }
 
