@@ -1,10 +1,12 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
+import { ObjectId } from 'mongodb';
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+// Increase JSON payload limit to 10MB (default is 100kb)
+app.use(express.json({ limit: '10mb' }));
 
 // Connect to MongoDB (use 'afa' database)
 mongoose.connect('mongodb://localhost:27017/argentina_db');
@@ -133,6 +135,76 @@ app.post('/api/register', async (req, res) => {
     }
     console.error('Registration error:', err);
     res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Add new gallery image (admin)
+app.post('/api/admin/gallery', async (req, res) => {
+  try {
+    const { imageUrl } = req.body;
+    if (!imageUrl) return res.status(400).json({ error: 'Image URL required' });
+    const newImg = new Gallery({ imageUrl });
+    await newImg.save();
+    res.json({ message: 'Gallery image added' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to add gallery image' });
+  }
+});
+
+// Add new match ticket (admin)
+app.post('/api/admin/matchtickets', async (req, res) => {
+  try {
+    const { title, price, image } = req.body;
+    if (!title || !price) return res.status(400).json({ error: 'Title and price required' });
+    await mongoose.connection.collection('matchtickets').insertOne({ title, price, image });
+    res.json({ message: 'Match ticket added' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to add match ticket' });
+  }
+});
+
+// Add new merchandise (admin)
+app.post('/api/admin/merchandise', async (req, res) => {
+  try {
+    const { title, price, image } = req.body;
+    if (!title || !price) return res.status(400).json({ error: 'Title and price required' });
+    await mongoose.connection.collection('merchandise').insertOne({ title, price, image });
+    res.json({ message: 'Merchandise added' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to add merchandise' });
+  }
+});
+
+// Delete gallery image by id
+app.delete('/api/admin/gallery/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    await mongoose.connection.collection('gallery').deleteOne({ _id: new ObjectId(id) });
+    res.json({ message: 'Gallery image deleted' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete gallery image' });
+  }
+});
+
+// Delete match ticket by id
+app.delete('/api/admin/matchtickets/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    await mongoose.connection.collection('matchtickets').deleteOne({ _id: new ObjectId(id) });
+    res.json({ message: 'Match ticket deleted' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete match ticket' });
+  }
+});
+
+// Delete merchandise by id
+app.delete('/api/admin/merchandise/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    await mongoose.connection.collection('merchandise').deleteOne({ _id: new ObjectId(id) });
+    res.json({ message: 'Merchandise deleted' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete merchandise' });
   }
 });
 
