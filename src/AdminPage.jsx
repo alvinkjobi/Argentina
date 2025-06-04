@@ -8,7 +8,12 @@ import { useState, useEffect } from 'react';
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = e => resolve(e.target.result);
+    reader.onload = e => {
+      const result = e.target.result;
+      // Remove the data URL prefix if present
+      const base64 = result.includes(',') ? result.split(',')[1] : result;
+      resolve(base64);
+    };
     reader.onerror = e => reject(e);
     reader.readAsDataURL(file);
   });
