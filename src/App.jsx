@@ -2,7 +2,6 @@ import GalleryCard from "./Gallerycard.jsx";
 import Header from "./Header.jsx";
 import TeamInfo from "./TeamInfo.jsx";
 import Trophy from "./Trophy.jsx";
-import teamImage from "./assets/teamimage.jpg";
 import WC from "./assets/WC.jpg";
 import CA from "./assets/CA.jpg";
 import F from "./assets/F.jpg";

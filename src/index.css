@@ -61,11 +61,28 @@
 }
 
 .team-info-title {
-  font-size: 1.4rem;
+  font-size: 2rem;
   font-weight: bold;
   margin-bottom: 0.5rem;
-  color: #0033a0;
+  background: linear-gradient(to right, #0033a0, #00aaff);
+  -webkit-background-clip: text;
+  color: transparent;
+  font-weight: bold; /* Makes the text bold */
+  font-family: 'Segoe UI', 'Arial', 'Helvetica Neue', Arial, sans-serif; /* Ensure font consistency */
 }
+
+.team-info-text {
+  font-size: 1.5rem;
+
+  margin-bottom: 1rem;
+  font-family: 'Segoe UI', 'Arial', 'Helvetica Neue', Arial, sans-serif;
+  background: linear-gradient(to right, #0033a0, #00aaff);
+  -webkit-background-clip: text;
+  color: transparent;
+  font-weight: bold; /* Makes the text bold */
+}
+
+
 
 .team-info-flex {
   display: flex;
