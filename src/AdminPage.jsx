@@ -2,7 +2,7 @@ import Header from './Header';
 import Footer from './Footer';
 import './SignIn.css';
 import './AdminPage.css';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 // Utility function to convert file to base64
 function fileToBase64(file) {
@@ -37,6 +37,16 @@ function AdminPage() {
   const [ticketList, setTicketList] = useState([]);
   const [merchList, setMerchList] = useState([]);
 
+  // Add delete message states
+  const [galleryDeleteMsg, setGalleryDeleteMsg] = useState('');
+  const [ticketDeleteMsg, setTicketDeleteMsg] = useState('');
+  const [merchDeleteMsg, setMerchDeleteMsg] = useState('');
+
+  // File input refs
+  const galleryFileRef = useRef(null);
+  const ticketFileRef = useRef(null);
+  const merchFileRef = useRef(null);
+
   // Fetch all data on mount and after add/delete
   const fetchAll = async () => {
     const [g, t, m] = await Promise.all([
@@ -56,6 +66,46 @@ function AdminPage() {
   useEffect(() => { if (ticketMsg.includes('added')) fetchAll(); }, [ticketMsg]);
   useEffect(() => { if (merchMsg.includes('added')) fetchAll(); }, [merchMsg]);
 
+  // Clear delete messages after 1 second
+  useEffect(() => {
+    if (galleryDeleteMsg) {
+      const t = setTimeout(() => setGalleryDeleteMsg(''), 1000);
+      return () => clearTimeout(t);
+    }
+  }, [galleryDeleteMsg]);
+  useEffect(() => {
+    if (ticketDeleteMsg) {
+      const t = setTimeout(() => setTicketDeleteMsg(''), 1000);
+      return () => clearTimeout(t);
+    }
+  }, [ticketDeleteMsg]);
+  useEffect(() => {
+    if (merchDeleteMsg) {
+      const t = setTimeout(() => setMerchDeleteMsg(''), 1000);
+      return () => clearTimeout(t);
+    }
+  }, [merchDeleteMsg]);
+
+  // Clear add messages after 1 second
+  useEffect(() => {
+    if (galleryMsg) {
+      const t = setTimeout(() => setGalleryMsg(''), 1000);
+      return () => clearTimeout(t);
+    }
+  }, [galleryMsg]);
+  useEffect(() => {
+    if (ticketMsg) {
+      const t = setTimeout(() => setTicketMsg(''), 1000);
+      return () => clearTimeout(t);
+    }
+  }, [ticketMsg]);
+  useEffect(() => {
+    if (merchMsg) {
+      const t = setTimeout(() => setMerchMsg(''), 1000);
+      return () => clearTimeout(t);
+    }
+  }, [merchMsg]);
+
   // Handlers
   const handleGallerySubmit = async (e) => {
     e.preventDefault();
@@ -70,6 +120,7 @@ function AdminPage() {
       if (res.ok) {
         setGalleryMsg('Gallery image added!');
         setGalleryUrl('');
+        if (galleryFileRef.current) galleryFileRef.current.value = "";
       } else {
         setGalleryMsg(data.error || 'Failed to add image');
       }
@@ -81,6 +132,11 @@ function AdminPage() {
   const handleTicketSubmit = async (e) => {
     e.preventDefault();
     setTicketMsg('');
+    // Require image for ticket
+    if (!ticket.image) {
+      setTicketMsg('Image is required');
+      return;
+    }
     try {
       const res = await fetch('http://localhost:5000/api/admin/matchtickets', {
         method: 'POST',
@@ -91,6 +147,7 @@ function AdminPage() {
       if (res.ok) {
         setTicketMsg('Match ticket added!');
         setTicket({ title: '', price: '', image: '' });
+        if (ticketFileRef.current) ticketFileRef.current.value = "";
       } else {
         setTicketMsg(data.error || 'Failed to add ticket');
       }
@@ -102,6 +159,11 @@ function AdminPage() {
   const handleMerchSubmit = async (e) => {
     e.preventDefault();
     setMerchMsg('');
+    // Require image for merch
+    if (!merch.image) {
+      setMerchMsg('Image is required');
+      return;
+    }
     try {
       const res = await fetch('http://localhost:5000/api/admin/merchandise', {
         method: 'POST',
@@ -112,6 +174,7 @@ function AdminPage() {
       if (res.ok) {
         setMerchMsg('Merchandise added!');
         setMerch({ title: '', price: '', image: '' });
+        if (merchFileRef.current) merchFileRef.current.value = "";
       } else {
         setMerchMsg(data.error || 'Failed to add merchandise');
       }
@@ -122,16 +185,37 @@ function AdminPage() {
 
   // Delete handlers
   const handleDeleteGallery = async (id) => {
-    await fetch(`http://localhost:5000/api/admin/gallery/${id}`, { method: 'DELETE' });
-    fetchAll();
+    try {
+      const res = await fetch(`http://localhost:5000/api/admin/gallery/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        setGalleryDeleteMsg('Image deleted!');
+      }
+      fetchAll();
+    } catch {
+      setGalleryDeleteMsg('Failed to delete image');
+    }
   };
   const handleDeleteTicket = async (id) => {
-    await fetch(`http://localhost:5000/api/admin/matchtickets/${id}`, { method: 'DELETE' });
-    fetchAll();
+    try {
+      const res = await fetch(`http://localhost:5000/api/admin/matchtickets/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        setTicketDeleteMsg('Image deleted!');
+      }
+      fetchAll();
+    } catch {
+      setTicketDeleteMsg('Failed to delete image');
+    }
   };
   const handleDeleteMerch = async (id) => {
-    await fetch(`http://localhost:5000/api/admin/merchandise/${id}`, { method: 'DELETE' });
-    fetchAll();
+    try {
+      const res = await fetch(`http://localhost:5000/api/admin/merchandise/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        setMerchDeleteMsg('Image deleted!');
+      }
+      fetchAll();
+    } catch {
+      setMerchDeleteMsg('Failed to delete image');
+    }
   };
 
   // Handler for gallery image file upload
@@ -176,6 +260,7 @@ function AdminPage() {
               accept="image/*"
               onChange={handleGalleryFile}
               style={{ marginBottom: 12 }}
+              ref={galleryFileRef}
             />
             <button type="submit" className="signin-btn">Add</button>
             {galleryMsg && <div className={`admin-msg ${galleryMsg.includes('added') ? 'admin-success' : 'admin-error'}`}>{galleryMsg}</div>}
@@ -205,6 +290,7 @@ function AdminPage() {
               accept="image/*"
               onChange={handleTicketFile}
               style={{ marginBottom: 12 }}
+              ref={ticketFileRef}
             />
             <button type="submit" className="signin-btn">Add</button>
             {ticketMsg && <div className={`admin-msg ${ticketMsg.includes('added') ? 'admin-success' : 'admin-error'}`}>{ticketMsg}</div>}
@@ -234,6 +320,7 @@ function AdminPage() {
               accept="image/*"
               onChange={handleMerchFile}
               style={{ marginBottom: 12 }}
+              ref={merchFileRef}
             />
             <button type="submit" className="signin-btn">Add</button>
             {merchMsg && <div className={`admin-msg ${merchMsg.includes('added') ? 'admin-success' : 'admin-error'}`}>{merchMsg}</div>}
@@ -243,6 +330,15 @@ function AdminPage() {
         <div className="admin-lists">
           <div className="admin-list-section">
             <h3 className="admin-list-title">Gallery Images</h3>
+            {/* Show gallery delete message only here */}
+            {galleryDeleteMsg && (
+              <div
+                className={`admin-msg ${galleryDeleteMsg.includes('deleted') ? 'admin-success' : 'admin-error'}`}
+                style={{ marginBottom: 12, fontSize: '1.04rem', fontWeight: 600 }}
+              >
+                {galleryDeleteMsg}
+              </div>
+            )}
             <ul className="admin-list">
               {galleryList.map((img, idx) => (
                 <li key={img._id} className="admin-list-item">
@@ -254,10 +350,18 @@ function AdminPage() {
           </div>
           <div className="admin-list-section">
             <h3 className="admin-list-title">Match Tickets</h3>
+            {/* Show ticket delete message only here */}
+            {ticketDeleteMsg && (
+              <div
+                className={`admin-msg ${ticketDeleteMsg.includes('deleted') ? 'admin-success' : 'admin-error'}`}
+                style={{ marginBottom: 12, fontSize: '1.04rem', fontWeight: 600 }}
+              >
+                {ticketDeleteMsg}
+              </div>
+            )}
             <ul className="admin-list">
               {ticketList.map(ticket => (
                 <li key={ticket._id} className="admin-list-item">
-                  {/* Removed image */}
                   <span style={{ flex: 1 }}>{ticket.title} - {ticket.price}</span>
                   <button className="admin-delete-btn" onClick={() => handleDeleteTicket(ticket._id)}>Delete</button>
                 </li>
@@ -266,10 +370,18 @@ function AdminPage() {
           </div>
           <div className="admin-list-section">
             <h3 className="admin-list-title">Merchandise</h3>
+            {/* Show merch delete message only here */}
+            {merchDeleteMsg && (
+              <div
+                className={`admin-msg ${merchDeleteMsg.includes('deleted') ? 'admin-success' : 'admin-error'}`}
+                style={{ marginBottom: 12, fontSize: '1.04rem', fontWeight: 600 }}
+              >
+                {merchDeleteMsg}
+              </div>
+            )}
             <ul className="admin-list">
               {merchList.map(item => (
                 <li key={item._id} className="admin-list-item">
-                  {/* Removed image */}
                   <span style={{ flex: 1 }}>{item.title} - {item.price}</span>
                   <button className="admin-delete-btn" onClick={() => handleDeleteMerch(item._id)}>Delete</button>
                 </li>

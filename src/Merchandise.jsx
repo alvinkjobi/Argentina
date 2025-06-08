@@ -32,22 +32,28 @@ function Merchandise() {
         </p>
         <div className="merch-items">
           {/* Dynamically render all match tickets from DB */}
-          {tickets.map((ticket, idx) => (
-            <div className="merch-item" key={idx}>
-              <img
-                src={
-                  ticket.image && !ticket.image.startsWith('http')
-                    ? `data:image/jpeg;base64,${ticket.image}`
-                    : ticket.image
-                }
-                alt={ticket.title || 'Ticket'}
-                className="merch-img"
-              />  
-              <div className="merch-item-title">{ticket.title}</div>
-              <div className="merch-item-price">{ticket.price}</div>
-              <button className="merch-btn">Buy Now</button>
+          {tickets && tickets.length > 0 ? (
+            tickets.map((ticket, idx) => (
+              <div className="merch-item" key={idx}>
+                <img
+                  src={
+                    ticket.image && !ticket.image.startsWith('http')
+                      ? `data:image/jpeg;base64,${ticket.image}`
+                      : ticket.image
+                  }
+                  alt={ticket.title || 'Ticket'}
+                  className="merch-img"
+                />  
+                <div className="merch-item-title">{ticket.title}</div>
+                <div className="merch-item-price">{ticket.price}</div>
+                <button className="merch-btn">Buy Now</button>
+              </div>
+            ))
+          ) : (
+            <div style={{ color: "#0033a0", fontWeight: 500, textAlign: "center", width: "100%" }}>
+              No match tickets available.
             </div>
-          ))}
+          )}
         </div>
       </div>
       <div className="merch-container-alt">
