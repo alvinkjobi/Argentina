@@ -26,7 +26,13 @@ function Header({ isSignInPage = false }) {
         <img src={AFAlogo} alt="AFA Logo" className="afa-logo" />
         <div className="header-title-layer">
           <span className="Title">
+            <a
+                href="/"
+                className="afa-nav-link"
+                
+              >
             Argentina FC
+            </a>
           </span>
         </div>
         <nav className="afa-nav">
